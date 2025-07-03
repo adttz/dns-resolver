@@ -1,0 +1,14 @@
+# Object files
+*.o
+
+# Executables
+dns_resolver
+test
+
+# Backup/temporary files
+*~
+*.swp
+*.tmp
+
+# Build directories 
+build/

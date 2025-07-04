@@ -12,3 +12,4 @@ test
 
 # Build directories 
 build/
+.vscode

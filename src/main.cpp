@@ -1,24 +1,31 @@
 #include <iostream>
-#include <iomanip>
 #include "dns.h"
+#include "parser.h"
 
-int main() {
+int main(int argc, char *argv[]) {
+    if(argc != 2){
+        std::cerr << "Usage: " << argv[0] << " <domain>" << '\n';
+        return 1;
+    }
+
     std::string domain = "dns.google.com";
-    auto query = build_dns_query(domain);
-
-    std::cout << "Sending DNS query to 8.8.8.8...\n";
+    std::vector<uint8_t> query = build_dns_query(domain);
     std::vector<uint8_t> response;
 
     if (send_udp_query(query, response, 0x1234)) {
-        std::cout << "Received response (" << response.size() << " bytes):\n";
-        for (size_t i = 0; i < response.size(); ++i) {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)response[i];
-            if ((i + 1) % 16 == 0) std::cout << "\n";
+        uint16_t ancount = (response[6] << 8) | response[7];        // Number of answers
+        size_t offset = 12;                                         // 12 bytes : fixed-size DNS header
+
+        decode_name(response, offset); // skip question name
+        offset += 4; // skip QTYPE + QCLASS
+
+        if(!parse_answers(response, offset, ancount)){
+            std::cerr << "Enter valid url." << '\n';
+            return 1;
         }
-        std::cout << std::dec << "\n";
     } 
     else {
-        std::cerr << "Failed to get a valid response.\n";
+        std::cerr << "DNS query failed.\n";
     }
 
     return 0;

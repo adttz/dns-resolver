@@ -1,9 +1,9 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Iinclude
+CXXFLAGS := -g -std=c++17 -Wall -Iinclude
 
-SRC := src/main.cpp src/dns.cpp
+SRC := src/main.cpp src/dns.cpp src/parser.cpp
 OBJ := $(SRC:src/%.cpp=build/%.o)
-BIN := build/dns_resolver
+BIN := dns_resolver
 
 all: $(BIN)
 
@@ -17,6 +17,6 @@ build:
 	mkdir build
 
 clean:
-	rm -rf build
+	rm -rf build dns_resolver
 
 .PHONY: all clean
